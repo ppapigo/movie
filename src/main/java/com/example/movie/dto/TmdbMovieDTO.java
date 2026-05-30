@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -51,6 +52,5 @@ public class TmdbMovieDTO {
     private Float voteAverage;
 
     @JsonProperty("vote_count")
-    private String voteCount;
-
+    private Integer voteCount;
 }
