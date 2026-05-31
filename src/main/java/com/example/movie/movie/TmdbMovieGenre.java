@@ -1,5 +1,6 @@
-package com.example.movie.entity;
+package com.example.movie.movie;
 
+import com.example.movie.genre.TmdbGenre;
 import jakarta.persistence.*;
 import lombok.*;
 

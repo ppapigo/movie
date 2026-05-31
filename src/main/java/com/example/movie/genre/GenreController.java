@@ -1,9 +1,6 @@
-package com.example.movie.controller;
+package com.example.movie.genre;
 
-import com.example.movie.dto.IngestResult;
-import com.example.movie.dto.TmdbGenreResponse;
-import com.example.movie.service.GenreService;
-import lombok.NoArgsConstructor;
+import com.example.movie.common.IngestResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

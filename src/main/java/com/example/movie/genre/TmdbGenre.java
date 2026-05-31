@@ -1,6 +1,5 @@
-package com.example.movie.entity;
+package com.example.movie.genre;
 
-import com.example.movie.dto.TmdbGenreDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -31,5 +30,10 @@ public class TmdbGenre {
                 .name(dto.getName())
                 .build();
     }
+
+    public static TmdbGenreDTO toDTO(TmdbGenre genre){
+        return new TmdbGenreDTO(genre.getId(), genre.getName());
+    }
+
 }
 

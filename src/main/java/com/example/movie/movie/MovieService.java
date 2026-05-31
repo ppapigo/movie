@@ -1,22 +1,20 @@
-package com.example.movie.service;
+package com.example.movie.movie;
 
-import com.example.movie.Repository.GenreRepository;
-import com.example.movie.Repository.MovieRepository;
-import com.example.movie.dto.IngestResult;
-import com.example.movie.dto.TmdbMovieDTO;
-import com.example.movie.dto.TmdbMovieResponse;
-import com.example.movie.entity.TmdbGenre;
-import com.example.movie.entity.TmdbMovie;
+import com.example.movie.genre.GenreRepository;
+import com.example.movie.common.IngestResult;
+import com.example.movie.genre.TmdbGenreDTO;
+import com.example.movie.genre.TmdbGenre;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -78,9 +76,49 @@ public class MovieService {
     }
 
     @Transactional(readOnly = true)
-    public List<TmdbMovieDTO> allMovies(){
-        return movieRepository.findAllWithGenres().stream().map(
-                TmdbMovie::toDTO).toList();
+    public Page<TmdbMovieDTO> allMovies(int page, int pageSize){
+        Pageable pageable = PageRequest.of(page-1,pageSize);
+        return movieRepository.findAllWithGenres(pageable).map(
+                TmdbMovie::toDTO);
 
     }
+
+    @Transactional
+    public Page<TmdbMovieDTO> findByGenreId(Long genreId, int page, int pageSize){
+        Pageable pageable = PageRequest.of(page-1,pageSize);
+        return movieRepository.findAllByGenreId(genreId, pageable).map(
+                TmdbMovie::toDTO);
+    }
+
+
+    @Transactional
+    public Page<TmdbMovieDTO> findByOriginalLanguage(String lang,int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page-1,pageSize);
+        return movieRepository.findAllByOriginalLanguage(lang, pageable).map(
+                TmdbMovie::toDTO);
+
+    }
+
+    @Transactional
+    public Page<TmdbMovieDTO> findByTitle(String title, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page-1,pageSize);
+        return movieRepository.findAllByTitle(title, pageable).map(
+                TmdbMovie::toDTO);
+
+    }
+
+    @Transactional
+    public Page<TmdbMovieDTO> listByVoteAvg(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page-1,pageSize);
+        return movieRepository.findAllByOrderByVoteAverage(pageable).map(
+                TmdbMovie::toDTO);
+    }
+
+    @Transactional
+    public List<TmdbGenreDTO> genres(long movieId) {
+        return movieRepository.findGenresByMovieId(movieId).stream().map(
+                TmdbGenre::toDTO).toList();
+    }
+
+
 }

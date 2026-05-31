@@ -1,6 +1,6 @@
-package com.example.movie.entity;
+package com.example.movie.movie;
 
-import com.example.movie.dto.TmdbMovieDTO;
+import com.example.movie.genre.TmdbGenre;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -13,7 +13,6 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.DoubleStream;
 
 @Entity
 @Table(name = "movie")

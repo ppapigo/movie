@@ -1,4 +1,4 @@
-package com.example.movie.dto;
+package com.example.movie.movie;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

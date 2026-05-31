@@ -1,4 +1,4 @@
-package com.example.movie.dto;
+package com.example.movie.movie;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -16,6 +16,9 @@ public class TmdbMovieResponse {
 
     private int page;
 
+    @JsonProperty("page_size")
+    private int pageSize;
+
     private List<TmdbMovieDTO> results;
 
     @JsonProperty("total_pages")
@@ -23,4 +26,6 @@ public class TmdbMovieResponse {
 
     @JsonProperty("total_results")
     private Long totalResults;
+
+
 }

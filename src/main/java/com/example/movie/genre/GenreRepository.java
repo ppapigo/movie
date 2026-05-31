@@ -1,6 +1,5 @@
-package com.example.movie.Repository;
+package com.example.movie.genre;
 
-import com.example.movie.entity.TmdbGenre;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

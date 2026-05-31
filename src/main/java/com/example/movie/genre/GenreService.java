@@ -1,9 +1,6 @@
-package com.example.movie.service;
+package com.example.movie.genre;
 
-import com.example.movie.Repository.GenreRepository;
-import com.example.movie.dto.*;
-import com.example.movie.entity.TmdbGenre;
-import com.example.movie.entity.TmdbMovie;
+import com.example.movie.common.IngestResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.example.movie.dto;
+package com.example.movie.genre;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
