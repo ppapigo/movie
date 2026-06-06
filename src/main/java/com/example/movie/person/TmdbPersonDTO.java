@@ -1,5 +1,6 @@
 package com.example.movie.person;
 
+import com.example.movie.movie.MovieSimpleDTO;
 import com.example.movie.movie.TmdbMovie;
 import com.example.movie.movie.TmdbMovieDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,12 +16,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TmdbPersonDTO {
-    private boolean adult;
-    private int gender;
+    private Boolean adult;
+    private String gender;
     private long id;
 
     @JsonProperty("known_for_department")
-    private String KnownForDepartment;
+    private String knownForDepartment;
 
     private String name;
 
@@ -33,5 +34,7 @@ public class TmdbPersonDTO {
     private String profilePath;
 
     @JsonProperty("known_for")
-    private List<TmdbMovieDTO> KnownFor;
+    private List<TmdbMovieDTO> knownFor;
+
+    private List<MovieSimpleDTO> movies;
 }

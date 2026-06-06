@@ -74,6 +74,15 @@ public class TmdbMovie {
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<TmdbMovieGenre> movieGenres = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(
+            mappedBy = "movie",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
+    )
+    private List<TmdbMoviePerson> moviePersonList = new ArrayList<>();
+
     public static TmdbMovie fromDTO(TmdbMovieDTO dto) {
         return TmdbMovie.builder()
                 .id(dto.getId())

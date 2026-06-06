@@ -53,4 +53,7 @@ public class TmdbMovieDTO {
 
     @JsonProperty("vote_count")
     private Integer voteCount;
+
+    @JsonProperty("media_type")
+    private String mediaType;
 }

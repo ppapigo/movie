@@ -16,6 +16,9 @@ public class TmdbPersonResponse {
     private int page;
     private List<TmdbPersonDTO> results;
 
+    @JsonProperty("page_size")
+    private int pageSize;
+
     @JsonProperty("total_pages")
     private Long totalPages;
 
