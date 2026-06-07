@@ -1,6 +1,8 @@
 package com.example.movie.person;
 
 import com.example.movie.common.IngestResult;
+import com.example.movie.genre.GenreRepository;
+import com.example.movie.genre.TmdbGenre;
 import com.example.movie.movie.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -21,95 +23,208 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PersonService {
+
     private final RestClient restClient;
+
     private final PersonRepository personRepository;
+
     private final MovieRepository movieRepository;
+
+    private final GenreRepository genreRepository;
 
     @Value("${tmdb.default-language}")
     private String defaultLanguage;
 
     private int total;
+
     private int saved;
+
     private int skipped;
 
-    public TmdbPersonResponse fetchAll(int page){
+    public TmdbPersonResponse fetchAll(int page) {
+
         return restClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/person/popular")
-                    .queryParam("language",defaultLanguage)
-                .queryParam("page",page)
-                .build())
+                .uri(uriBuilder ->
+                        uriBuilder.path("/person/popular")
+                                .queryParam(
+                                        "language",
+                                        defaultLanguage
+                                )
+                                .queryParam("page", page)
+                                .build()
+                )
                 .retrieve()
                 .body(TmdbPersonResponse.class);
-
     }
 
     @Transactional
     public IngestResult sync(int page) {
+
         TmdbPersonResponse response = fetchAll(page);
 
-        IngestResult result = new IngestResult();
+        List<TmdbPersonDTO> personDTOs =
+                response.getResults();
 
-
-        List<TmdbPersonDTO> personDTOs = response.getResults();
         total = personDTOs.size();
+
         saved = 0;
+
         skipped = 0;
-        Map<Long, TmdbMovie> movieMap = movieRepository.findAll().stream()
-                .collect(Collectors.toMap(TmdbMovie::getId, movie -> movie));
+
+        Map<Long, TmdbMovie> movieMap =
+                movieRepository.findAll()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                TmdbMovie::getId,
+                                movie -> movie
+                        ));
+
+        Map<Long, TmdbGenre> genreMap =
+                genreRepository.findAll()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                TmdbGenre::getId,
+                                genre -> genre
+                        ));
 
         personDTOs.forEach(tmdbPersonDTO -> {
+
             try {
 
                 if (tmdbPersonDTO.getProfilePath() == null) {
+
                     skipped++;
+
                     return;
                 }
-                TmdbPerson person = TmdbPerson.fromDTO(tmdbPersonDTO);
+
+                TmdbPerson person =
+                        TmdbPerson.fromDTO(
+                                tmdbPersonDTO
+                        );
 
                 if (tmdbPersonDTO.getKnownFor() != null) {
 
-                    tmdbPersonDTO.getKnownFor().forEach(movieDto -> {
-                        if (!"movie".equals(movieDto.getMediaType())) {
-                            return;
-                        }
-                        TmdbMovie movie =
-                                movieMap.get(movieDto.getId());
+                    tmdbPersonDTO.getKnownFor()
+                            .forEach(movieDto -> {
 
-                        if (movie == null) {
+                                if (!"movie".equals(
+                                        movieDto.getMediaType()
+                                )) {
 
-                            movie = TmdbMovie.fromDTO(movieDto);
+                                    return;
+                                }
 
-                            movieRepository.save(movie);
+                                TmdbMovie movie =
+                                        movieMap.get(
+                                                movieDto.getId()
+                                        );
 
-                            movieMap.put(movie.getId(), movie);
-                        }
+                                if (movie == null) {
 
-                        TmdbMoviePerson moviePerson =
-                                TmdbMoviePerson.builder()
-                                        .movie(movie)
-                                        .person(person)
-                                        .build();
+                                    movie =
+                                            TmdbMovie
+                                                    .fromDtoWithGenres(
+                                                            movieDto,
+                                                            genreMap
+                                                    );
 
-                        person.getMoviePersonList().add(moviePerson);
-                    });
+                                    movieRepository.save(
+                                            movie
+                                    );
+
+                                    movieMap.put(
+                                            movie.getId(),
+                                            movie
+                                    );
+                                }
+
+                                TmdbMoviePerson moviePerson =
+                                        TmdbMoviePerson
+                                                .builder()
+                                                .movie(movie)
+                                                .person(person)
+                                                .build();
+
+                                person.getMoviePersonList()
+                                        .add(moviePerson);
+                            });
                 }
 
                 personRepository.save(person);
 
                 saved++;
 
-            } catch (IllegalArgumentException |
-                     OptimisticLockingFailureException ex) {
+            } catch (
+                    IllegalArgumentException |
+                    OptimisticLockingFailureException ex
+            ) {
 
                 skipped++;
             }
         });
-        return new IngestResult(total, saved, skipped);
+
+        return new IngestResult(
+                total,
+                saved,
+                skipped
+        );
     }
 
-    public Page<TmdbPersonDTO> findByName(String pname, @Min(1) int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page-1,pageSize);
-        return personRepository.findByName(pname,pageable).map(
-                TmdbPerson::toDTO);
+    @Transactional(readOnly = true)
+    public Page<TmdbPersonDTO> findByName(
+            String pname,
+            @Min(1) int page,
+            int pageSize
+    ) {
+
+        Pageable pageable =
+                PageRequest.of(
+                        page - 1,
+                        pageSize
+                );
+
+        return personRepository
+                .findByName(
+                        pname,
+                        pageable
+                )
+                .map(TmdbPerson::toDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TmdbPersonDTO> findAllByOrderByName(
+            int page,
+            int pageSize
+    ) {
+
+        Pageable pageable =
+                PageRequest.of(
+                        page - 1,
+                        pageSize
+                );
+
+        return personRepository
+                .findAllByOrderByName(pageable)
+                .map(TmdbPerson::toDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TmdbPersonDTO> findTop10ByOrderByPopularityDesc() {
+
+        return personRepository
+                .findTop10ByOrderByPopularityDesc()
+                .stream()
+                .map(TmdbPerson::toDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<TmdbMovieDTO> movies(Long personId){
+        TmdbPerson person = personRepository.findById(personId).orElseThrow();
+
+        return person.getMoviePersonList().stream().map(mp->
+            TmdbMovie.toDTO(mp.getMovie())).toList();
     }
 }
+

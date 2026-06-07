@@ -3,6 +3,7 @@ package com.example.movie.movie;
 import com.example.movie.common.IngestResult;
 import com.example.movie.genre.TmdbGenreDTO;
 import com.example.movie.genre.TmdbGenreResponse;
+import com.example.movie.person.TmdbPersonDTO;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -101,6 +102,11 @@ public class MovieController {
             response.setGenres(results);
         }
         return response;
+    }
+
+    @GetMapping("/{id}/person")
+    public List<TmdbPersonDTO> personWithMovie(@PathVariable("id")Long id){
+        return movieService.personWithMovie(id);
     }
 
 }

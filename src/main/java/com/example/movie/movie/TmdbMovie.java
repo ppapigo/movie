@@ -103,7 +103,7 @@ public class TmdbMovie {
     }
 
     public static TmdbMovie fromDtoWithGenres(TmdbMovieDTO dto, Map<Long, TmdbGenre> genreMap) {
-        TmdbMovie movie = new TmdbMovieBuilder()
+        TmdbMovie movie = TmdbMovie.builder()
                 .id(dto.getId())
                 .adult(dto.getAdult())
                 .title(dto.getTitle())
@@ -165,7 +165,7 @@ public class TmdbMovie {
         dto.setVoteCount(movie.getVoteCount());
         dto.setVoteAverage(movie.getVoteAverage());
         List<Integer> genreIds = movie.getMovieGenres().stream().map(
-                g->g.getId().intValue()).toList();
+                mg->mg.getGenre().getId().intValue()).toList();
         dto.setGenreIds(genreIds);
         return dto;
     }

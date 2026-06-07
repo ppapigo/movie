@@ -47,7 +47,6 @@ public class TmdbPerson {
     private List<TmdbMoviePerson> moviePersonList = new ArrayList<>();
 
 
-
     public static TmdbPerson fromDTO(TmdbPersonDTO dto) {
         return TmdbPerson.builder()
                 .id(dto.getId())
@@ -62,6 +61,7 @@ public class TmdbPerson {
 
 
     }
+
     public static TmdbPerson fromDtoWithMovie(TmdbPersonDTO dto, Map<Long, TmdbMovie> movieMap) {
         TmdbPerson person = new TmdbPersonBuilder()
                 .adult(dto.getAdult())
@@ -90,7 +90,7 @@ public class TmdbPerson {
     }
 
     public static TmdbPersonDTO toDTO(TmdbPerson person) {
-        TmdbPersonDTO dto =new TmdbPersonDTO();
+        TmdbPersonDTO dto = new TmdbPersonDTO();
         dto.setId(person.getId());
         dto.setAdult(person.getAdult());
         dto.setGender(person.getGender());
@@ -100,13 +100,23 @@ public class TmdbPerson {
         dto.setOriginalName(person.getOriginalName());
         dto.setProfilePath(person.getProfilePath());
 
-        List<MovieSimpleDTO> movies =
+        List<TmdbMovieDTO> knownFor =
                 person.getMoviePersonList()
                         .stream()
-                        .map(mp -> MovieSimpleDTO.toDTO(mp.getMovie()))
+                        .map(mp -> {
+
+                            TmdbMovie movie = mp.getMovie();
+
+                            TmdbMovieDTO movieDTO =
+                                    TmdbMovie.toDTO(movie);
+
+                            movieDTO.setMediaType("movie");
+
+                            return movieDTO;
+                        })
                         .toList();
 
-        dto.setMovies(movies);
+        dto.setKnownFor(knownFor);
 
         return dto;
     }

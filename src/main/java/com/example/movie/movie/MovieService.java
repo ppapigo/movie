@@ -5,6 +5,8 @@ import com.example.movie.common.IngestResult;
 import com.example.movie.genre.TmdbGenreDTO;
 import com.example.movie.genre.TmdbGenre;
 
+import com.example.movie.person.TmdbPerson;
+import com.example.movie.person.TmdbPersonDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -120,5 +122,19 @@ public class MovieService {
                 TmdbGenre::toDTO).toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<TmdbPersonDTO> personWithMovie(Long id) {
+        TmdbMovie movie =
+                movieRepository.findById(id)
+                        .orElseThrow();
 
+        return movie.getMoviePersonList()
+                .stream()
+                .map(mp ->
+                        TmdbPerson.toDTO(
+                                mp.getPerson()
+                        )
+                )
+                .toList();
+    }
 }
